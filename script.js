@@ -5,11 +5,12 @@ var dx = [-1, -1, -1, 0, 0, 1, 1, 1];
 var dy = [-1, 0, 1, -1, 1, -1, 0, 1];
 
 cells.forEach(function (cells) {
-    const x = Number(cells.dataset.row) - 1;
-    const y = Number(cells.dataset.column) - 1;
+    const x = Number(cells.dataset.row);
+    const y = Number(cells.dataset.column);
     cells.addEventListener('click', function () {
+        console.log(`Clicked cell at (${x}, ${y})`);
         dig(x, y);
-    });
+        });
 
     cells.addEventListener('contextmenu', function () {
         toggleFlag(x, y);
@@ -32,22 +33,32 @@ function resetGame() {
         }
     }
 }
-
+function printBoard() {
+    for (let i = 0; i < 5; i++) {
+        let row = '';
+        for (let j = 0; j < 5; j++) {
+            row += board[i][j] + ' ';
+        }
+        console.log(row);
+    }
+}
 //dig-->
 function dig(x, y) {
     if (firstClick) {//first move
         generateBoard(x, y);
-        if (board[x][y] == 0) {//zero clicked
+        printBoard();
+        if (board[x][y] == '0') {//zero clicked
             dfs(x, y);
         }
     }
     else {// non first move
+        printBoard();
         if (board[x][y] == 'M') {//mine
             // game over
             console.log("Game Over");
         }
         else {//non mine
-            if (board[x][y] == 0) {//zero clicked
+            if (board[x][y] == '0') {//zero clicked
                 dfs(x, y);
             }
             else {//non zero clicked
@@ -57,7 +68,7 @@ function dig(x, y) {
     }
 }
 
-function revealCell(x, y ) {
+function revealCell(x, y) {
     cell = document.getElementById(`${x + 1}${y + 1}`);
     cell.textContent = board[x][y];
 }
@@ -111,7 +122,7 @@ function createBoard() {
     }
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
-            board[i][j] = 0;
+            board[i][j] = '0';
         }
     }
 }
@@ -121,7 +132,7 @@ function generateMines(x, y) {
     for (let i = 0; i < mines; i++) {
         let randX = Math.floor(Math.random() * 5);
         let randY = Math.floor(Math.random() * 5);
-        if (randX >=x-1&&randX <= x+1 && randY >= y-1 && randY <= y+1) {
+        if ((randX >= x - 1 && randX <= x + 1 && randY >= y - 1 && randY <= y + 1)) {
             i--;
             continue;
         }
@@ -130,6 +141,7 @@ function generateMines(x, y) {
 }
 
 function generateNumbers(x, y) {
+    //if(board[x][y] == 'M') return;
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
             var dx = [-1, -1, -1, 0, 0, 1, 1, 1];
