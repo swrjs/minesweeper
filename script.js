@@ -1,12 +1,14 @@
 const cells = document.querySelectorAll('.cell');
 
 var x, y, firstClick = 1;
+var dx = [-1, -1, -1, 0, 0, 1, 1, 1];
+var dy = [-1, 0, 1, -1, 1, -1, 0, 1];
 
 cells.forEach(function (cells) {
     const x = Number(cells.dataset.row) - 1;
     const y = Number(cells.dataset.column) - 1;
     cells.addEventListener('click', function () {
-        revealCell(x, y);
+        dig(x, y);
     });
 
     cells.addEventListener('contextmenu', function () {
@@ -14,24 +16,50 @@ cells.forEach(function (cells) {
     });
 })
 
-var dx = [-1, -1, -1, 0, 0, 1, 1, 1];
-var dy = [-1, 0, 1, -1, 1, -1, 0, 1];
+options = document.querySelectorAll('.option');
+options.forEach(function (options) {
+    options.addEventListener('click', function () {
+        resetGame();
+    });
+})
 
-function revealCell(x, y) {
-    if (firstClick) {
+function resetGame() {
+    firstClick = 1;
+    for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+            let cell = document.getElementById(`${i + 1}${j + 1}`);
+            cell.textContent = '⠀';
+        }
+    }
+}
+
+//dig-->
+function dig(x, y) {
+    if (firstClick) {//first move
         generateBoard(x, y);
-        return;
+        if (board[x][y] == 0) {//zero clicked
+            dfs(x, y);
+        }
     }
-    if (board[x][y] == 'M') {
-        // game over
+    else {// non first move
+        if (board[x][y] == 'M') {//mine
+            // game over
+            console.log("Game Over");
+        }
+        else {//non mine
+            if (board[x][y] == 0) {//zero clicked
+                dfs(x, y);
+            }
+            else {//non zero clicked
+                revealCell(x, y);
+            }
+        }
     }
-    else if (board[x][y] == 0) {
-        dfs(x, y);
-    }
-    else {
-        change = document.getElementById("11");
-        change.textContent = board[x][y];
-    }
+}
+
+function revealCell(x, y ) {
+    cell = document.getElementById(`${x + 1}${y + 1}`);
+    cell.textContent = board[x][y];
 }
 
 function dfs(x, y) {
@@ -62,16 +90,16 @@ function createVis() {
             vis[i][j] = false;
         }
     }
-    function toggleFlag(x, y) {
-
-    }
 }
+
+
 
 function generateBoard(x, y) {
     // initialize board
     // seed random mines
     // calculate numbers around the mines
     createBoard();
+    createVis();
     generateMines(x, y);
     generateNumbers();
     firstClick = false;
@@ -89,9 +117,14 @@ function createBoard() {
 }
 
 function generateMines(x, y) {
-    for (let i = 0; i < 4; i++) {
+    let mines = 5;
+    for (let i = 0; i < mines; i++) {
         let randX = Math.floor(Math.random() * 5);
         let randY = Math.floor(Math.random() * 5);
+        if (randX >=x-1&&randX <= x+1 && randY >= y-1 && randY <= y+1) {
+            i--;
+            continue;
+        }
         board[randX][randY] = 'M';
     }
 }
