@@ -13,6 +13,7 @@ cells.forEach(function (cells) {
         });
 
     cells.addEventListener('contextmenu', function () {
+        event.preventDefault();
         toggleFlag(x, y);
     });
 })
@@ -23,6 +24,15 @@ options.forEach(function (options) {
         resetGame();
     });
 })
+
+function toggleFlag(x, y) {
+    let cell = document.getElementById(`${x + 1}${y + 1}`);
+    if (cell.textContent == '⠀') {
+        cell.textContent = '🚩';
+    } else {
+        cell.textContent = '⠀';
+    }
+}
 
 function resetGame() {
     firstClick = 1;
@@ -48,6 +58,7 @@ function dig(x, y) {
         generateBoard(x, y);
         printBoard();
         if (board[x][y] == '0') {//zero clicked
+            console.log(`Performing DFS on (${x}, ${y})`);
             dfs(x, y);
         }
     }
@@ -75,15 +86,18 @@ function revealCell(x, y) {
 
 function dfs(x, y) {
     vis[x][y] = true;
+    revealCell(x, y);
     for (let i = 0; i < 8; i++) {
         let newX = x + dx[i];
         let newY = y + dy[i];
-        if (newX >= 0 && newX < 5 && newY >= 0 && newY < 5) {
-            if (board[newX][newY] != '0') {
+        if (newX >= 0 && newX < 5 && newY >= 0 && newY < 5 && !vis[newX][newY]) {
+            if (board[newX][newY] == '0') {
+                vis[newX][newY] = true;
                 revealCell(newX, newY);
                 dfs(newX, newY);
             }
             else {
+                vis[newX][newY] = true;
                 revealCell(newX, newY);
             }
         }
@@ -132,11 +146,12 @@ function generateMines(x, y) {
     for (let i = 0; i < mines; i++) {
         let randX = Math.floor(Math.random() * 5);
         let randY = Math.floor(Math.random() * 5);
-        if ((randX >= x - 1 && randX <= x + 1 && randY >= y - 1 && randY <= y + 1)) {
+        if ((randX >= x - 1 && randX <= x + 1 && randY >= y - 1 && randY <= y + 1)||(board[randX][randY] == 'M')) {
             i--;
             continue;
         }
         board[randX][randY] = 'M';
+        console.log(`Mine placed at (${randX}, ${randY})`);
     }
 }
 
@@ -156,7 +171,9 @@ function generateNumbers(x, y) {
                     }
                 }
             }
-            board[i][j] = cnt;
+            if (board[i][j] != 'M') {
+                board[i][j] = cnt;
+            }
         }
     }
 }
