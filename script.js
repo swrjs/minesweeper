@@ -8,6 +8,7 @@ var dy = [-1, 0, 1, -1, 1, -1, 0, 1];
 var winsfx= new Audio('sounds/win.mp3');
 var digsfx= new Audio('sounds/dig.mp3');
 var losesfx= new Audio('sounds/lose.mp3');
+var flagSfx = new Audio('sounds/flag.mp3');
 var mineslist =[];
 
 var timer=0;
@@ -34,6 +35,7 @@ options.forEach(function (options) {
 })
 
 function toggleFlag(x, y) {
+    flagSfx.play();
     let cell = document.getElementById(`${x + 1}${y + 1}`);
     if (cell.textContent == '⠀') {
         cell.textContent = '🚩';
@@ -74,12 +76,13 @@ function dig(x, y) {
         //printBoard();
         if (board[x][y] == '💣') {//mine
             // game over
-            boomsfx.play();
+            losesfx.play();
             board[x][y] = '💥';
             revealAllFlags();
             console.log("Game Over");
         }
         else {//non mine
+            //digsfx.play();
             if (board[x][y] == '0') {//zero clicked
                 dfs(x, y);
             }
@@ -97,6 +100,7 @@ for(let i = 0; i < mineslist.length; i++) {
 }
 
 function revealCell(x, y) {
+    digsfx.play();
     cell = document.getElementById(`${x + 1}${y + 1}`);
     cell.textContent = board[x][y];
 }
