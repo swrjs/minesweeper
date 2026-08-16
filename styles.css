@@ -1,0 +1,99 @@
+* {}
+
+body {}
+
+#board {
+    /* making the grid layout */
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    /*grid container defined*/
+    grid-template-columns: repeat(5, 60px);
+    grid-template-rows: repeat(5, 60px);
+    gap: 0px;
+    /* grid dimensions defined*/
+
+    
+}
+
+#menu {
+    display: grid;
+    grid-template-columns: repeat(2);
+
+}
+
+.cell {
+    
+    width: 59px;
+    height: 59px;
+    /* keeping cell dimensions consistent with the grid dimensions */
+    background-color: #a39ff5 ;
+    
+    border: 2px solid #813ece;
+    border-radius: 6px;
+
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 300;
+
+    cursor: pointer; 
+}
+
+.cell:hover {
+    background-color: #a585e0;
+
+}
+
+.cell:active {
+    background-color: #D0D0D0;
+}
+
+.cell.revealed {}
+
+.cell.flagged {
+    background-color: #0000ff;
+}
+
+.cell.mine {
+    background-color: #ff0000;
+}
+
+.options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.timer {
+    background-color: #7a8feb;
+    color: white;
+    padding: 10px 20px; /*10 is top-bottom and 20 is left-right */
+    text-align: center;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 7px;
+}
+.reset {
+    background-color: #7a8feb;
+    color: white;
+    padding: 10px 20px; /*10 is top-bottom and 20 is left-right */
+    text-align: center;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 7px;
+}
+
+.timer:hover {
+    background-color: #7a8feb;
+}
+
+.reset:active {}
+
+@media (max-width: 500px) {
+    #board {}
+
+    .cell {}
+}

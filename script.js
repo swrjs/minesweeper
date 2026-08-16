@@ -4,6 +4,14 @@ var x, y, firstClick = 1;
 var dx = [-1, -1, -1, 0, 0, 1, 1, 1];
 var dy = [-1, 0, 1, -1, 1, -1, 0, 1];
 
+//var losesfx= new Audio('sounds/vine-boom.mp3');
+var winsfx= new Audio('sounds/win.mp3');
+var digsfx= new Audio('sounds/dig.mp3');
+var losesfx= new Audio('sounds/lose.mp3');
+var mineslist =[];
+
+var timer=0;
+
 cells.forEach(function (cells) {
     const x = Number(cells.dataset.row);
     const y = Number(cells.dataset.column);
@@ -18,7 +26,7 @@ cells.forEach(function (cells) {
     });
 })
 
-options = document.querySelectorAll('.option');
+options = document.querySelectorAll('.options');
 options.forEach(function (options) {
     options.addEventListener('click', function () {
         resetGame();
@@ -63,9 +71,12 @@ function dig(x, y) {
         }
     }
     else {// non first move
-        printBoard();
-        if (board[x][y] == 'M') {//mine
+        //printBoard();
+        if (board[x][y] == '💣') {//mine
             // game over
+            boomsfx.play();
+            board[x][y] = '💥';
+            revealAllFlags();
             console.log("Game Over");
         }
         else {//non mine
@@ -76,6 +87,12 @@ function dig(x, y) {
                 revealCell(x, y);
             }
         }
+    }
+}
+
+function revealAllFlags() {
+for(let i = 0; i < mineslist.length; i++) {
+    revealCell(mineslist[i][0], mineslist[i][1]);
     }
 }
 
@@ -146,17 +163,18 @@ function generateMines(x, y) {
     for (let i = 0; i < mines; i++) {
         let randX = Math.floor(Math.random() * 5);
         let randY = Math.floor(Math.random() * 5);
-        if ((randX >= x - 1 && randX <= x + 1 && randY >= y - 1 && randY <= y + 1)||(board[randX][randY] == 'M')) {
+        if ((randX >= x - 1 && randX <= x + 1 && randY >= y - 1 && randY <= y + 1)||(board[randX][randY] == '💣')) {
             i--;
             continue;
         }
-        board[randX][randY] = 'M';
+        board[randX][randY] = '💣';
         console.log(`Mine placed at (${randX}, ${randY})`);
+        mineslist.push([randX, randY]);
     }
 }
 
 function generateNumbers(x, y) {
-    //if(board[x][y] == 'M') return;
+    //if(board[x][y] == '💣') return;
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
             var dx = [-1, -1, -1, 0, 0, 1, 1, 1];
@@ -166,12 +184,12 @@ function generateNumbers(x, y) {
                 let newX = i + dx[k];
                 let newY = j + dy[k];
                 if (newX >= 0 && newX < 5 && newY >= 0 && newY < 5) {
-                    if (board[newX][newY] == 'M') {
+                    if (board[newX][newY] == '💣') {
                         cnt++;
                     }
                 }
             }
-            if (board[i][j] != 'M') {
+            if (board[i][j] != '💣') {
                 board[i][j] = cnt;
             }
         }
